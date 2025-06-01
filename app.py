@@ -2,32 +2,30 @@ import os
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
-# Load .env file
+# Load environment variables from .env (optional, helpful for local testing)
 load_dotenv()
 
 app = Flask(__name__)
 
-# Simple endpoint to test moderation
 @app.route("/analyze", methods=["POST"])
 def analyze():
     data = request.get_json()
-
     comment = data.get("comment", "")
     score = float(data.get("score", 0))
 
-    # Example logic – modify later for Perspective API integration
-    if score > 0.8 or "suck" in comment.lower():
+    # Basic rule for blocking based on score or keyword
+    if score > 0.8 or any(word in comment.lower() for word in ["suck", "idiot", "stupid"]):
         return jsonify({
             "final_decision": "block",
             "reason": "High toxicity or keyword match"
-        })
+        }), 200
     else:
         return jsonify({
             "final_decision": "allow",
             "reason": "Low risk"
-        })
+        }), 200
 
-# Render requires listening on dynamic port
+# Main entry for Render (bind to dynamic port)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
