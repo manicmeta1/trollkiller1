@@ -9,9 +9,6 @@ app = Flask(__name__)
 def analyze():
     try:
         data = request.get_json(force=True)
-        if not data:
-            return jsonify({"error": "No JSON received"}), 400
-
         comment = data.get("comment", "")
         score = float(data.get("score", 0))
 
@@ -25,7 +22,6 @@ def analyze():
                 "final_decision": "allow",
                 "reason": "Low risk"
             }), 200
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
